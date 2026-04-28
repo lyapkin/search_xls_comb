@@ -4,11 +4,13 @@ import (
 	"errors"
 	"log"
 	"strconv"
+	"time"
 
+	"github.com/lyapkin/search_comg_xls/internal/state"
 	"github.com/xuri/excelize/v2"
 )
 
-func Find(input map[string]struct{}, cols string) ([][]string, error) {
+func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 	if len(input) == 0 {
 		return nil, errors.New("не указаны данные для поиска")
 	}
@@ -37,12 +39,12 @@ func Find(input map[string]struct{}, cols string) ([][]string, error) {
 		}
 	}()
 
-	isFirstRow := true
-
-	result := make([][]string, 0)
+	rowIdx := 0
+	result := make([]state.Row, 0)
 	for rows.Next() {
-		if isFirstRow {
-			isFirstRow = false
+		rowIdx++
+
+		if rowIdx == 1 {
 			continue
 		}
 
@@ -57,7 +59,49 @@ func Find(input map[string]struct{}, cols string) ([][]string, error) {
 		}
 
 		if matches(row[2:length+1], input) {
-			result = append(result, row)
+			n, err := strconv.Atoi(row[0])
+			if err != nil {
+				return nil, err
+			}
+
+			date, err := time.Parse("02/01/06", row[1])
+			if err != nil {
+				return nil, err
+			}
+
+			data := make([]int, 0)
+			for _, val := range row[2 : length+2] {
+				v, err := strconv.Atoi(val)
+				if err != nil {
+					return nil, err
+				}
+				data = append(data, v)
+			}
+
+			sum, err := strconv.Atoi(row[2+length])
+			if err != nil {
+				return nil, err
+			}
+
+			even, err := strconv.Atoi(row[2+length+1])
+			if err != nil {
+				return nil, err
+			}
+
+			odd, err := strconv.Atoi(row[2+length+2])
+			if err != nil {
+				return nil, err
+			}
+
+			r := state.Row{
+				Number: n,
+				Date:   date,
+				Data:   data,
+				Sum:    sum,
+				Even:   even,
+				Odd:    odd,
+			}
+			result = append(result, r)
 		}
 	}
 

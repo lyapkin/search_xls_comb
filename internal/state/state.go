@@ -1,7 +1,18 @@
 package state
 
+import "time"
+
+type Row struct {
+	Number int
+	Date   time.Time
+	Data   []int
+	Sum    int
+	Even   int
+	Odd    int
+}
+
 type State struct {
-	Data        [][]string
+	Data        []Row
 	Status      status
 	Error       error
 	subscribers []func(s *State)
@@ -14,7 +25,7 @@ func (s *State) SetError(err error) {
 	s.notify()
 }
 
-func (s *State) SetSuccess(data [][]string) {
+func (s *State) SetSuccess(data []Row) {
 	if data != nil {
 		s.Data = data
 	}

@@ -74,7 +74,5 @@ func New(a fyne.App) fyne.Window {
 
 	window.SetContent(container.NewPadded(content))
 
-	window.ShowAndRun()
-
 	return window
 }

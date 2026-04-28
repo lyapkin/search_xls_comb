@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	"strconv"
 	"unsafe"
 
 	"fyne.io/fyne/v2"
@@ -19,10 +20,10 @@ type output struct {
 	table  *widget.Table
 	text   *widget.Label
 	Widget *fyne.Container
-	data   [][]string
+	data   []state.Row
 }
 
-func New(data [][]string) *output {
+func New(data []state.Row) *output {
 	o := output{}
 
 	o.data = data
@@ -34,9 +35,9 @@ func New(data [][]string) *output {
 	return &o
 }
 
-func (o *output) showData() {
+func (o *output) showData(cols int) {
 	o.Widget.RemoveAll()
-	o.Widget.Add(o.newTable())
+	o.Widget.Add(o.newTable(cols))
 	o.Widget.Refresh()
 }
 
@@ -56,7 +57,7 @@ func (o *output) Refresh(s *state.State) {
 
 		o.data = s.Data
 		if len(o.data) > 0 {
-			o.showData()
+			o.showData(len(o.data[0].Data))
 			return
 		}
 
@@ -67,7 +68,7 @@ func (o *output) Refresh(s *state.State) {
 	}
 }
 
-func (o *output) newTable() *widget.Table {
+func (o *output) newTable(dataCols int) *widget.Table {
 	t := widget.NewTableWithHeaders(
 		func() (rows int, cols int) {
 			if o.data == nil {
@@ -75,10 +76,7 @@ func (o *output) newTable() *widget.Table {
 			}
 
 			rows = len(o.data)
-			cols = 0
-			if rows > 0 {
-				cols = len(o.data[0])
-			}
+			cols = dataCols + len(headers)
 
 			return rows, cols
 		},
@@ -88,7 +86,20 @@ func (o *output) newTable() *widget.Table {
 			return l
 		},
 		func(i widget.TableCellID, obj fyne.CanvasObject) {
-			obj.(*widget.Label).SetText(o.data[i.Row][i.Col])
+			switch i.Col {
+			case 0:
+				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Number))
+			case 1:
+				obj.(*widget.Label).SetText(o.data[i.Row].Date.Format("02.01.06"))
+			case dataCols + 2:
+				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Sum))
+			case dataCols + 3:
+				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Even))
+			case dataCols + 4:
+				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Odd))
+			default:
+				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Data[i.Col-2]))
+			}
 		},
 	)
 
@@ -97,7 +108,7 @@ func (o *output) newTable() *widget.Table {
 	// set column length for date cell
 	t.SetColumnWidth(1, 100)
 	// set column length for data cells
-	dataLength := len(o.data[0]) - len(headers)
+	dataLength := len(o.data[0].Data)
 	for i := 2; i <= dataLength+2; i++ {
 		t.SetColumnWidth(i, 32)
 	}

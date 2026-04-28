@@ -8,10 +8,11 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/lyapkin/search_comg_xls/internal/state"
 	"github.com/xuri/excelize/v2"
 )
 
-func Export(data [][]string) error {
+func Export(data []state.Row) error {
 	if len(data) == 0 {
 		return errors.New("нет данных для экспорта")
 	}
@@ -40,22 +41,29 @@ func Export(data [][]string) error {
 	}
 	header := make([]any, 0)
 	header = append(header, "№", "Дата")
-	for i := 1; i < len(data[0])-4; i++ {
+	for i := 1; i <= len(data[0].Data); i++ {
 		header = append(header, fmt.Sprint(i))
 	}
 	header = append(header, "Сумма", "Чет", "Нечет")
 	sw.SetRow(headerCell, header)
 
+	fmtStr := "dd.mm.yy"
+	dateStyle, _ := f.NewStyle(&excelize.Style{CustomNumFmt: &fmtStr})
 	for i, row := range data {
 		cell, err := excelize.CoordinatesToCellName(1, i+2)
 		if err != nil {
 			return err
 		}
-		r := make([]any, len(row)+1)
-		for j, val := range row {
-			r[j] = val
+		n := row.Number
+		date := excelize.Cell{StyleID: dateStyle, Value: row.Date}
+		sum := row.Sum
+		even := row.Even
+		odd := row.Odd
+		r := []any{n, date}
+		for _, val := range row.Data {
+			r = append(r, val)
 		}
-
+		r = append(r, sum, even, odd)
 		sw.SetRow(cell, r)
 	}
 
@@ -63,7 +71,7 @@ func Export(data [][]string) error {
 		return err
 	}
 
-	inputLength := fmt.Sprint(len(data[0]) - 4)
+	inputLength := fmt.Sprint(len(data[0].Data))
 	fileName := time.Now().Format("02-01-06_15-04-05") + "_" + inputLength + ".xlsx"
 	if err := f.SaveAs(filepath.Join(folder, fileName)); err != nil {
 		return err
