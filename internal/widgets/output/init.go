@@ -36,7 +36,10 @@ func New(data []state.Row) *output {
 }
 
 func (o *output) showData(cols int) {
+	amount := widget.NewLabel(fmt.Sprintf("Количество найденных строк: %d", len(o.data)))
 	o.Widget.RemoveAll()
+	o.Widget.Layout = layout.NewBorderLayout(amount, nil, nil, nil)
+	o.Widget.Add(amount)
 	o.Widget.Add(o.newTable(cols))
 	o.Widget.Refresh()
 }
@@ -44,6 +47,7 @@ func (o *output) showData(cols int) {
 func (o *output) showText(text string) {
 	o.text.Text = text
 	o.Widget.RemoveAll()
+	o.Widget.Layout = layout.NewBorderLayout(nil, nil, nil, nil)
 	o.Widget.Add(o.text)
 	o.Widget.Refresh()
 }
