@@ -34,13 +34,13 @@ func Export(data [][]string) error {
 	if err != nil {
 		return err
 	}
-	headerCell, err := excelize.CoordinatesToCellName(2, 1)
+	headerCell, err := excelize.CoordinatesToCellName(1, 1)
 	if err != nil {
 		return err
 	}
 	header := make([]any, 0)
-	header = append(header, "Дата")
-	for i := 1; i < len(data[0])-3; i++ {
+	header = append(header, "№", "Дата")
+	for i := 1; i < len(data[0])-4; i++ {
 		header = append(header, fmt.Sprint(i))
 	}
 	header = append(header, "Сумма", "Чет", "Нечет")
@@ -52,9 +52,8 @@ func Export(data [][]string) error {
 			return err
 		}
 		r := make([]any, len(row)+1)
-		r[0] = fmt.Sprint(i + 1)
 		for j, val := range row {
-			r[j+1] = val
+			r[j] = val
 		}
 
 		sw.SetRow(cell, r)

@@ -13,7 +13,7 @@ import (
 
 var noData = "Данных нет"
 
-var headers = []string{"Дата", "Сумма", "Чет", "Нечет"}
+var headers = []string{"№", "Дата", "Сумма", "Чет", "Нечет"}
 
 type output struct {
 	table  *widget.Table
@@ -92,12 +92,17 @@ func (o *output) newTable() *widget.Table {
 		},
 	)
 
-	t.SetColumnWidth(0, 100)
-	dataLength := len(o.data[0]) - 4
-	for i := 1; i <= dataLength; i++ {
+	// set column length for № cell
+	t.SetColumnWidth(0, 24)
+	// set column length for date cell
+	t.SetColumnWidth(1, 100)
+	// set column length for data cells
+	dataLength := len(o.data[0]) - len(headers)
+	for i := 2; i <= dataLength+2; i++ {
 		t.SetColumnWidth(i, 32)
 	}
-	for i := dataLength + 1; i <= dataLength+3; i++ {
+	// set column length for the rest cells
+	for i := dataLength + 2; i <= dataLength+4; i++ {
 		t.SetColumnWidth(i, 80)
 	}
 
@@ -109,14 +114,18 @@ func (o *output) newTable() *widget.Table {
 	}
 
 	t.UpdateHeader = func(id widget.TableCellID, template fyne.CanvasObject) {
-		if id.Row == -1 && id.Col == 0 {
+		if id.Row == -1 && (id.Col == 0 || id.Col == 1) {
+			// set header for first 2 columns
 			template.(*widget.Label).SetText(headers[id.Col])
-		} else if id.Row == -1 && id.Col > dataLength {
+		} else if id.Row == -1 && id.Col > dataLength+1 {
+			// set header for last 3 columns
 			template.(*widget.Label).SetText(headers[id.Col-dataLength])
 		} else if id.Row == -1 {
-			template.(*widget.Label).SetText(fmt.Sprint(id.Col))
+			// set header for the data columns
+			template.(*widget.Label).SetText(fmt.Sprint(id.Col - 1))
 		} else {
-			template.(*widget.Label).SetText(fmt.Sprintf("%d", id.Row+1))
+			// set row count
+			// template.(*widget.Label).SetText(fmt.Sprintf("%d", id.Row+1))
 		}
 	}
 

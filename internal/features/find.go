@@ -56,9 +56,7 @@ func Find(input map[string]struct{}, cols string) ([][]string, error) {
 			return nil, err
 		}
 
-		row = row[1:]
-
-		if matches(row[1:length+1], input) {
+		if matches(row[2:length+1], input) {
 			result = append(result, row)
 		}
 	}
