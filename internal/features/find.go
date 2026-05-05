@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/lyapkin/search_comg_xls/internal/state"
 	"github.com/xuri/excelize/v2"
@@ -48,7 +47,7 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 			continue
 		}
 
-		row, err := rows.Columns()
+		row, err := rows.Columns(excelize.Options{RawCellValue: true})
 		if err != nil {
 			return nil, err
 		}
@@ -64,10 +63,12 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 				return nil, err
 			}
 
-			date, err := time.Parse("02/01/06", row[1])
+			dateStr, err := strconv.ParseFloat(row[1], 64)
 			if err != nil {
 				return nil, err
 			}
+
+			date, err := excelize.ExcelDateToTime(dateStr, false)
 
 			data := make([]int, 0)
 			for _, val := range row[2 : length+2] {
