@@ -1,10 +1,8 @@
 package state
 
-import "time"
-
 type Row struct {
 	Number int
-	Date   time.Time
+	Date   string
 	Data   []int
 	Sum    int
 	Even   int

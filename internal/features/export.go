@@ -47,15 +47,13 @@ func Export(data []state.Row) error {
 	header = append(header, "Сумма", "Чет", "Нечет")
 	sw.SetRow(headerCell, header)
 
-	fmtStr := "dd.mm.yy"
-	dateStyle, _ := f.NewStyle(&excelize.Style{CustomNumFmt: &fmtStr})
 	for i, row := range data {
 		cell, err := excelize.CoordinatesToCellName(1, i+2)
 		if err != nil {
 			return err
 		}
 		n := row.Number
-		date := excelize.Cell{StyleID: dateStyle, Value: row.Date}
+		date := row.Date
 		sum := row.Sum
 		even := row.Even
 		odd := row.Odd

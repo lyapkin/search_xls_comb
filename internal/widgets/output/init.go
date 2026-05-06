@@ -87,6 +87,7 @@ func (o *output) newTable(dataCols int) *widget.Table {
 		func() fyne.CanvasObject {
 			l := widget.NewLabel("")
 			l.Alignment = fyne.TextAlignCenter
+			l.Truncation = fyne.TextTruncateEllipsis
 			return l
 		},
 		func(i widget.TableCellID, obj fyne.CanvasObject) {
@@ -94,7 +95,7 @@ func (o *output) newTable(dataCols int) *widget.Table {
 			case 0:
 				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Number))
 			case 1:
-				obj.(*widget.Label).SetText(o.data[i.Row].Date.Format("02.01.06"))
+				obj.(*widget.Label).SetText(o.data[i.Row].Date)
 			case dataCols + 2:
 				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Sum))
 			case dataCols + 3:
@@ -108,13 +109,13 @@ func (o *output) newTable(dataCols int) *widget.Table {
 	)
 
 	// set column length for № cell
-	t.SetColumnWidth(0, 24)
+	t.SetColumnWidth(0, 48)
 	// set column length for date cell
 	t.SetColumnWidth(1, 100)
 	// set column length for data cells
 	dataLength := len(o.data[0].Data)
 	for i := 2; i <= dataLength+2; i++ {
-		t.SetColumnWidth(i, 32)
+		t.SetColumnWidth(i, 36)
 	}
 	// set column length for the rest cells
 	for i := dataLength + 2; i <= dataLength+4; i++ {

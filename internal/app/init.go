@@ -17,7 +17,7 @@ var choices = [9]string{"4", "5", "6", "7", "8", "9", "10", "11", "12"}
 
 func New(a fyne.App) fyne.Window {
 	window := a.NewWindow("Поиcк комбинации")
-	window.Resize(fyne.NewSize(860, 400))
+	window.Resize(fyne.NewSize(920, 400))
 	window.SetFixedSize(true)
 
 	// init state

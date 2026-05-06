@@ -47,7 +47,7 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 			continue
 		}
 
-		row, err := rows.Columns(excelize.Options{RawCellValue: true})
+		row, err := rows.Columns()
 		if err != nil {
 			return nil, err
 		}
@@ -63,12 +63,7 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 				return nil, err
 			}
 
-			dateStr, err := strconv.ParseFloat(row[1], 64)
-			if err != nil {
-				return nil, err
-			}
-
-			date, err := excelize.ExcelDateToTime(dateStr, false)
+			date := row[1]
 
 			data := make([]int, 0)
 			for _, val := range row[2 : length+2] {
