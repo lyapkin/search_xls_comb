@@ -57,10 +57,10 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 			return nil, err
 		}
 
-		if matches(row[2:length+1], input) {
+		if matches(row[2:length+2], input) {
 			n, err := strconv.Atoi(row[0])
 			if err != nil {
-				return nil, err
+				n = 0
 			}
 
 			date := row[1]
