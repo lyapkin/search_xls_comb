@@ -57,6 +57,10 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 			return nil, err
 		}
 
+		if len(row) < length+2 {
+			continue
+		}
+
 		if matches(row[2:length+2], input) {
 			n, err := strconv.Atoi(row[0])
 			if err != nil {
