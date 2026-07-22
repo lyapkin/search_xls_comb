@@ -14,7 +14,7 @@ import (
 
 var noData = "Данных нет"
 
-var headers = []string{"№", "Дата", "Сумма", "Чет", "Нечет"}
+var headers = []string{"№", "Дата", "Сумма", "Чет", "Нечет", "Кол-во"}
 
 type output struct {
 	table  *widget.Table
@@ -102,6 +102,12 @@ func (o *output) newTable(dataCols int) *widget.Table {
 				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Even))
 			case dataCols + 4:
 				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Odd))
+			case dataCols + 5:
+				val := strconv.Itoa(o.data[i.Row].Count)
+				if val == "0" {
+					val = "-"
+				}
+				obj.(*widget.Label).SetText(val)
 			default:
 				obj.(*widget.Label).SetText(strconv.Itoa(o.data[i.Row].Data[i.Col-2]))
 			}
@@ -118,7 +124,7 @@ func (o *output) newTable(dataCols int) *widget.Table {
 		t.SetColumnWidth(i, 36)
 	}
 	// set column length for the rest cells
-	for i := dataLength + 2; i <= dataLength+4; i++ {
+	for i := dataLength + 2; i <= dataLength+5; i++ {
 		t.SetColumnWidth(i, 80)
 	}
 

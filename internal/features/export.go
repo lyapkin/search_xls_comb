@@ -44,7 +44,7 @@ func Export(data []state.Row) error {
 	for i := 1; i <= len(data[0].Data); i++ {
 		header = append(header, fmt.Sprint(i))
 	}
-	header = append(header, "Сумма", "Чет", "Нечет")
+	header = append(header, "Сумма", "Чет", "Нечет", "Кол-во")
 	sw.SetRow(headerCell, header)
 
 	for i, row := range data {
@@ -57,11 +57,19 @@ func Export(data []state.Row) error {
 		sum := row.Sum
 		even := row.Even
 		odd := row.Odd
+		count := row.Count
 		r := []any{n, date}
 		for _, val := range row.Data {
 			r = append(r, val)
 		}
 		r = append(r, sum, even, odd)
+
+		if count != 0 {
+			r = append(r, count)
+		} else {
+			r = append(r, nil)
+		}
+
 		sw.SetRow(cell, r)
 	}
 

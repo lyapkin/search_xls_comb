@@ -14,7 +14,7 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 		return nil, errors.New("не указаны данные для поиска")
 	}
 
-	f, err := excelize.OpenFile("db.xlsx")
+	f, err := excelize.OpenFile("db.xlsm")
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +93,17 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 				return nil, err
 			}
 
+			// Если последняя колонка, где должно высчитываться количество встретившихся похожих строк, не заполнена, то добавляем ее
+			// Колонка должна высчитываться в excel при помощи макросов при изменении введенных данных
+			if len(row) <= 2+length+3 {
+				row = append(row, "0")
+			}
+
+			count, err := strconv.Atoi(row[2+length+3])
+			if err != nil {
+				return nil, err
+			}
+
 			r := state.Row{
 				Number: n,
 				Date:   date,
@@ -100,6 +111,7 @@ func Find(input map[string]struct{}, cols string) ([]state.Row, error) {
 				Sum:    sum,
 				Even:   even,
 				Odd:    odd,
+				Count:  count,
 			}
 			result = append(result, r)
 		}

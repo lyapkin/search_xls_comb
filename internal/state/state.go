@@ -7,6 +7,7 @@ type Row struct {
 	Sum    int
 	Even   int
 	Odd    int
+	Count  int
 }
 
 type State struct {
